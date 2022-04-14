@@ -1,6 +1,7 @@
 package indigo
 
 import (
+	"fmt"
 	"os"
 	"testing"
 )
@@ -18,6 +19,7 @@ func TestMain(m *testing.M) {
 		"testkey",
 		sshKeyString1,
 	)
+	fmt.Printf("%v", key)
 	if err != nil {
 		os.Exit(-1)
 	}

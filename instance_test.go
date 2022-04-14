@@ -92,9 +92,8 @@ func TestGetInstanceList(t *testing.T) {
 
 func TestUpdateInstanceStatus(t *testing.T) {
 	time.Sleep(time.Second * 4)
-	status, err := client.UpdateInstanceStatus(instance.ID, "destroy")
+	err := client.UpdateInstanceStatus(instance.ID, "destroy")
 	if err != nil {
 		t.Fatalf("UpdateInstanceStatus() = %v, want %v", err, "'nil'")
 	}
-	fmt.Printf("%v", status)
 }

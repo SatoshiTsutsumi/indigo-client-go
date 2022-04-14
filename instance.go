@@ -1,61 +1,60 @@
 package indigo
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
-	"strings"
 )
 
 type InstanceRequest struct {
-	SSHKeyID     int    `json:"sshKeyId"`
+	SSHKeyID     int    `json:"sshKeyId,omitempty"`
+	WinPassword  string `json:"winPassword,omitempty"`
+	ImportURL    string `json:"importUrl,omitempty"`
+	SnapshotID   int    `json:"snapshotId,omitempty"`
 	RegionID     int    `json:"regionId"`
 	OSID         int    `json:"osId"`
 	InstancePlan int    `json:"instancePlan"`
 	InstanceName string `json:"instanceName"`
 }
 
-type WindowsInstanceRequest struct {
-	WinPassword  string `json:"winPassword"`
-	RegionID     int    `json:"regionId"`
-	OSID         int    `json:"osId"`
-	InstancePlan int    `json:"instancePlan"`
-	InstanceName string `json:"instanceName"`
-}
-
-type UpdateInstanceStatusRequest struct {
+type InstanceStatusUpdateRequest struct {
 	InstanceID int    `json:"instanceId"`
 	Status     string `json:"status"`
 }
 
 type RegionListResponse struct {
-	Success bool     `json:"success"`
-	Total   int      `json:"total"`
-	Regions []Region `json:"regionlist"`
+	Success bool      `json:"success"`
+	Total   int       `json:"total"`
+	Regions []*Region `json:"regionlist"`
 }
 
 type InstanceTypeListResponse struct {
-	Success       bool           `json:"success"`
-	Total         int            `json:"total"`
-	InstanceTypes []InstanceType `json:"instanceTypes"`
+	Success       bool            `json:"success"`
+	Total         int             `json:"total"`
+	InstanceTypes []*InstanceType `json:"instanceTypes"`
 }
 
 type OSListResponse struct {
-	Success      bool         `json:"success"`
-	Total        int          `json:"total"`
-	OSCategories []OSCategory `json:"osCategory"`
+	Success      bool          `json:"success"`
+	Total        int           `json:"total"`
+	OSCategories []*OSCategory `json:"osCategory"`
 }
 
 type InstanceSpecListResponse struct {
-	Success bool           `json:"success"`
-	Total   int            `json:"total"`
-	Specs   []InstanceSpec `json:"speclist"`
+	Success bool            `json:"success"`
+	Total   int             `json:"total"`
+	Specs   []*InstanceSpec `json:"speclist"`
 }
 
 type InstanceResponse struct {
-	Success  bool        `json:"success"`
-	Message  string      `json:"message"`
-	Instance NewInstance `json:"vms"`
+	Success  bool         `json:"success"`
+	Message  string       `json:"message"`
+	Instance *NewInstance `json:"vms"`
+}
+
+type InstanceStatusResponse struct {
+	Success        bool   `json:"success"`
+	Message        string `json:"message"`
+	SuccessCode    string `json:"successCode"`
+	InstanceStatus string `json:"instanceStatus"`
 }
 
 type Region struct {
@@ -74,10 +73,10 @@ type InstanceType struct {
 }
 
 type OSCategory struct {
-	ID     int    `json:"id"`
-	Name   string `json:"name"`
-	Logo   string `json:"logo"`
-	OSType OSType `json:"osLists"`
+	ID     int     `json:"id"`
+	Name   string  `json:"name"`
+	Logo   string  `json:"logo"`
+	OSType *OSType `json:"osLists"`
 }
 
 type OSType struct {
@@ -89,17 +88,17 @@ type OSType struct {
 }
 
 type InstanceSpec struct {
-	ID              int          `json:"id"`
-	Code            string       `json:"code"`
-	Name            string       `json:"name"`
-	Description     string       `json:"description"`
-	UsePossibleDate string       `json:"use_possible_date"`
-	InstanceTypeID  int          `json:"instancetype_id"`
-	IPAddressType   string       `json:"ipaddress_type"`
-	CreatedAt       string       `json:"created_at"`
-	UpdatedAt       string       `json:"updated_at"`
-	InstanceType    InstanceType `json:"instance_type"`
-	KVMResources    KVMResources `json:"kvm_resources"`
+	ID              int           `json:"id"`
+	Code            string        `json:"code"`
+	Name            string        `json:"name"`
+	Description     string        `json:"description"`
+	UsePossibleDate string        `json:"use_possible_date"`
+	InstanceTypeID  int           `json:"instancetype_id"`
+	IPAddressType   string        `json:"ipaddress_type"`
+	CreatedAt       string        `json:"created_at"`
+	UpdatedAt       string        `json:"updated_at"`
+	InstanceType    *InstanceType `json:"instance_type"`
+	KVMResources    *KVMResources `json:"kvm_resources"`
 }
 
 type KVMResources struct {
@@ -145,9 +144,9 @@ type NewInstance struct {
 	VNCPasswd        string `json:"vnc_passwd"`
 	ARPAName         string `json:"arpaname"`
 	ARPADate         int    `json:"arpadate"`
-	StartedAt        Date   `json:"started_at,omitempty"`
-	ClosedAt         Date   `json:"closed_at,omitempty"`
-	StatusChangeDate Date   `json:"status_change_date"`
+	StartedAt        *Date  `json:"started_at,omitempty"`
+	ClosedAt         *Date  `json:"closed_at,omitempty"`
+	StatusChangeDate *Date  `json:"status_change_date"`
 	UpdatedAt        string `json:"updated_at"`
 	VMRevert         int    `json:"vm_revert"`
 	IPAddress        string `json:"ipaddress,omitempty"`
@@ -158,7 +157,7 @@ type NewInstance struct {
 	OutOfStock       int    `json:"outofstock"`
 	IPAddressType    string `json:"ipaddress_type"`
 	VEID             string `json:"VEID,omitempty"`
-	OS               OS     `json:"os,omitempty"`
+	OS               *OS    `json:"os,omitempty"`
 	IP               string `json:"ip,omitempty"`
 }
 
@@ -175,8 +174,8 @@ type Instance struct {
 	Status           string `json:"status"`
 	SSHKeyID         int    `json:"sshkey_id"`
 	SnapshotID       int    `json:"snapshot_id"`
-	CreatedAt        Date   `json:"created_at"`
-	StartDate        Date   `json:"start_date"`
+	CreatedAt        *Date  `json:"created_at"`
+	StartDate        *Date  `json:"start_date"`
 	HostID           int    `json:"host_id"`
 	Plan             string `json:"plan"`
 	PlanID           int    `json:"plan_id"`
@@ -191,9 +190,9 @@ type Instance struct {
 	VNCPasswd        string `json:"vnc_passwd"`
 	ARPAName         string `json:"arpaname"`
 	ARPADate         int    `json:"arpadate"`
-	StartedAt        Date   `json:"started_at,omitempty"`
-	ClosedAt         Date   `json:"closed_at,omitempty"`
-	StatusChangeDate Date   `json:"status_change_date"`
+	StartedAt        *Date  `json:"started_at,omitempty"`
+	ClosedAt         *Date  `json:"closed_at,omitempty"`
+	StatusChangeDate *Date  `json:"status_change_date"`
 	UpdatedAt        string `json:"updated_at"`
 	VMRevert         int    `json:"vm_revert"`
 	IPAddress        string `json:"ipaddress,omitempty"`
@@ -204,33 +203,13 @@ type Instance struct {
 	OutOfStock       int    `json:"outofstock"`
 	IPAddressType    string `json:"ipaddress_type"`
 	VEID             string `json:"VEID,omitempty"`
-	OS               OS     `json:"os,omitempty"`
+	OS               *OS    `json:"os,omitempty"`
 	IP               string `json:"ip,omitempty"`
 }
 
-type InstanceStatusResponse struct {
-	Success        bool   `json:"success"`
-	Message        string `json:"message"`
-	SuccessCode    string `json:"successCode"`
-	InstanceStatus string `json:"instanceStatus"`
-}
-
-type InstanceStatus struct {
-}
-
-func (c *Client) GetRegionList() ([]Region, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", c.HostURL, GetRegionURL), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	body, err := c.doRequest(req)
-	if err != nil {
-		return nil, err
-	}
-
-	res := RegionListResponse{}
-	err = json.Unmarshal(body, &res)
+func (c *Client) GetRegionList() ([]*Region, error) {
+	res := &RegionListResponse{}
+	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.HostURL, PathGetRegion), nil, res)
 	if err != nil {
 		return nil, err
 	}
@@ -238,19 +217,9 @@ func (c *Client) GetRegionList() ([]Region, error) {
 	return res.Regions, nil
 }
 
-func (c *Client) GetInstanceTypeList() ([]InstanceType, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", c.HostURL, GetInstanceTypeListURL), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	body, err := c.doRequest(req)
-	if err != nil {
-		return nil, err
-	}
-
-	res := InstanceTypeListResponse{}
-	err = json.Unmarshal(body, &res)
+func (c *Client) GetInstanceTypeList() ([]*InstanceType, error) {
+	res := &InstanceTypeListResponse{}
+	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.HostURL, PathInstanceTypeList), nil, res)
 	if err != nil {
 		return nil, err
 	}
@@ -258,19 +227,9 @@ func (c *Client) GetInstanceTypeList() ([]InstanceType, error) {
 	return res.InstanceTypes, nil
 }
 
-func (c *Client) GetOSList() ([]OSCategory, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", c.HostURL, GetOSListURL), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	body, err := c.doRequest(req)
-	if err != nil {
-		return nil, err
-	}
-
-	res := OSListResponse{}
-	err = json.Unmarshal(body, &res)
+func (c *Client) GetOSList() ([]*OSCategory, error) {
+	res := &OSListResponse{}
+	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.HostURL, PathOSList), nil, res)
 	if err != nil {
 		return nil, err
 	}
@@ -278,19 +237,9 @@ func (c *Client) GetOSList() ([]OSCategory, error) {
 	return res.OSCategories, nil
 }
 
-func (c *Client) GetInstanceSpecList() ([]InstanceSpec, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", c.HostURL, GetInstanceSpecListURL), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	body, err := c.doRequest(req)
-	if err != nil {
-		return nil, err
-	}
-
-	res := InstanceSpecListResponse{}
-	err = json.Unmarshal(body, &res)
+func (c *Client) GetInstanceSpecList() ([]*InstanceSpec, error) {
+	res := &InstanceSpecListResponse{}
+	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.HostURL, PathGetInstanceSpecList), nil, res)
 	if err != nil {
 		return nil, err
 	}
@@ -299,117 +248,92 @@ func (c *Client) GetInstanceSpecList() ([]InstanceSpec, error) {
 }
 
 func (c *Client) CreateInstance(sshKeyID int, regionID int, osID int, plan int, name string) (*NewInstance, error) {
-	payload := &InstanceRequest{
+	req := &InstanceRequest{
 		SSHKeyID:     sshKeyID,
 		RegionID:     regionID,
 		OSID:         osID,
 		InstancePlan: plan,
 		InstanceName: name,
 	}
-	rb, err := json.Marshal(payload)
+	res := &InstanceResponse{}
+	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.HostURL, PathCreateInstance), req, res)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/%s", c.HostURL, CreateInstanceURL), strings.NewReader(string(rb)))
-	if err != nil {
-		return nil, err
-	}
-
-	body, err := c.doRequest(req)
-	if err != nil {
-		return nil, err
-	}
-
-	res := InstanceResponse{}
-	err = json.Unmarshal(body, &res)
-	if err != nil {
-		return nil, err
-	}
-
-	return &res.Instance, nil
+	return res.Instance, nil
 }
 
 func (c *Client) CreateWindowsInstance(winPassword string, regionID int, osID int, plan int, name string) (*NewInstance, error) {
-	payload := &WindowsInstanceRequest{
+	req := &InstanceRequest{
 		WinPassword:  winPassword,
 		RegionID:     regionID,
 		OSID:         osID,
 		InstancePlan: plan,
 		InstanceName: name,
 	}
-	rb, err := json.Marshal(payload)
+	res := &InstanceResponse{}
+	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.HostURL, PathCreateInstance), req, res)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/%s", c.HostURL, CreateInstanceURL), strings.NewReader(string(rb)))
-	if err != nil {
-		return nil, err
-	}
-
-	body, err := c.doRequest(req)
-	if err != nil {
-		return nil, err
-	}
-
-	res := InstanceResponse{}
-	err = json.Unmarshal(body, &res)
-	if err != nil {
-		return nil, err
-	}
-
-	return &res.Instance, nil
+	return res.Instance, nil
 }
 
-// func importURLInstance
-// func importSnapshotInstance
-
-func (c *Client) GetInstanceList() ([]Instance, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", c.HostURL, GetInstanceListURL), nil)
+func (c *Client) CreateImportInstance(url string, regionID int, osID int, plan int, name string) (*NewInstance, error) {
+	req := &InstanceRequest{
+		ImportURL:    url,
+		RegionID:     regionID,
+		OSID:         osID,
+		InstancePlan: plan,
+		InstanceName: name,
+	}
+	res := &InstanceResponse{}
+	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.HostURL, PathCreateInstance), req, res)
 	if err != nil {
 		return nil, err
 	}
 
-	body, err := c.doRequest(req)
-	if err != nil {
-		return nil, err
-	}
-
-	instances := []Instance{}
-	err = json.Unmarshal(body, &instances)
-	if err != nil {
-		return nil, err
-	}
-
-	return instances, nil
+	return res.Instance, nil
 }
 
-func (c *Client) UpdateInstanceStatus(instanceID int, status string) (*string, error) {
-	payload := &UpdateInstanceStatusRequest{
+func (c *Client) CreateSnapshotInstance(sshKeyID int, snapshotID int, plan int, name string) (*NewInstance, error) {
+	req := &InstanceRequest{
+		SSHKeyID:     sshKeyID,
+		SnapshotID:   snapshotID,
+		InstancePlan: plan,
+		InstanceName: name,
+	}
+	res := &InstanceResponse{}
+	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.HostURL, PathCreateInstance), req, res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Instance, nil
+}
+
+func (c *Client) GetInstanceList() (*Instance, error) {
+	res := &Instance{}
+	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.HostURL, PathGetInstanceList), nil, res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (c *Client) UpdateInstanceStatus(instanceID int, status string) error {
+	req := &InstanceStatusUpdateRequest{
 		InstanceID: instanceID,
 		Status:     status,
 	}
-	rb, err := json.Marshal(payload)
+	res := &InstanceStatusResponse{}
+	res, err := requestWithJson[any](c, "POST", fmt.Sprintf("%s/%s", c.HostURL, PathGetInstanceList), req, res)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/%s", c.HostURL, StatusUpdateURL), strings.NewReader(string(rb)))
-	if err != nil {
-		return nil, err
-	}
-
-	body, err := c.doRequest(req)
-	if err != nil {
-		return nil, err
-	}
-
-	res := InstanceStatusResponse{}
-	err = json.Unmarshal(body, &res)
-	if err != nil {
-		return nil, err
-	}
-
-	return &res.InstanceStatus, nil
+	return nil
 }
