@@ -3,9 +3,11 @@ package indigo
 import (
 	"fmt"
 	"testing"
+	"time"
 )
 
 func TestCreateFirewall(t *testing.T) {
+	time.Sleep(time.Second * 10)
 	inbound := []Rule{Rule{
 		Type:     "HTTP",
 		Protocol: "TCP",
@@ -27,6 +29,7 @@ func TestCreateFirewall(t *testing.T) {
 }
 
 func TestGetFirewallList(t *testing.T) {
+	time.Sleep(time.Second * 10)
 	firewalls, err := client.GetFirewallList()
 	if err != nil {
 		t.Fatalf("GetFirewallList() = %v, want %v", err, "'nil'")

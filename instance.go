@@ -209,7 +209,7 @@ type Instance struct {
 
 func (c *Client) GetRegionList() ([]*Region, error) {
 	res := &RegionListResponse{}
-	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.HostURL, PathGetRegion), nil, res)
+	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.hostURL, PathGetRegion), nil, res)
 	if err != nil {
 		return nil, err
 	}
@@ -219,7 +219,7 @@ func (c *Client) GetRegionList() ([]*Region, error) {
 
 func (c *Client) GetInstanceTypeList() ([]*InstanceType, error) {
 	res := &InstanceTypeListResponse{}
-	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.HostURL, PathInstanceTypeList), nil, res)
+	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.hostURL, PathInstanceTypeList), nil, res)
 	if err != nil {
 		return nil, err
 	}
@@ -229,7 +229,7 @@ func (c *Client) GetInstanceTypeList() ([]*InstanceType, error) {
 
 func (c *Client) GetOSList() ([]*OSCategory, error) {
 	res := &OSListResponse{}
-	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.HostURL, PathOSList), nil, res)
+	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.hostURL, PathOSList), nil, res)
 	if err != nil {
 		return nil, err
 	}
@@ -239,7 +239,7 @@ func (c *Client) GetOSList() ([]*OSCategory, error) {
 
 func (c *Client) GetInstanceSpecList() ([]*InstanceSpec, error) {
 	res := &InstanceSpecListResponse{}
-	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.HostURL, PathGetInstanceSpecList), nil, res)
+	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.hostURL, PathGetInstanceSpecList), nil, res)
 	if err != nil {
 		return nil, err
 	}
@@ -256,7 +256,7 @@ func (c *Client) CreateInstance(sshKeyID int, regionID int, osID int, plan int, 
 		InstanceName: name,
 	}
 	res := &InstanceResponse{}
-	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.HostURL, PathCreateInstance), req, res)
+	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathCreateInstance), req, res)
 	if err != nil {
 		return nil, err
 	}
@@ -273,7 +273,7 @@ func (c *Client) CreateWindowsInstance(winPassword string, regionID int, osID in
 		InstanceName: name,
 	}
 	res := &InstanceResponse{}
-	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.HostURL, PathCreateInstance), req, res)
+	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathCreateInstance), req, res)
 	if err != nil {
 		return nil, err
 	}
@@ -290,7 +290,7 @@ func (c *Client) CreateImportInstance(url string, regionID int, osID int, plan i
 		InstanceName: name,
 	}
 	res := &InstanceResponse{}
-	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.HostURL, PathCreateInstance), req, res)
+	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathCreateInstance), req, res)
 	if err != nil {
 		return nil, err
 	}
@@ -306,7 +306,7 @@ func (c *Client) CreateSnapshotInstance(sshKeyID int, snapshotID int, plan int, 
 		InstanceName: name,
 	}
 	res := &InstanceResponse{}
-	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.HostURL, PathCreateInstance), req, res)
+	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathCreateInstance), req, res)
 	if err != nil {
 		return nil, err
 	}
@@ -316,7 +316,7 @@ func (c *Client) CreateSnapshotInstance(sshKeyID int, snapshotID int, plan int, 
 
 func (c *Client) GetInstanceList() (*Instance, error) {
 	res := &Instance{}
-	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.HostURL, PathGetInstanceList), nil, res)
+	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.hostURL, PathGetInstanceList), nil, res)
 	if err != nil {
 		return nil, err
 	}
@@ -330,7 +330,7 @@ func (c *Client) UpdateInstanceStatus(instanceID int, status string) error {
 		Status:     status,
 	}
 	res := &InstanceStatusResponse{}
-	res, err := requestWithJson[any](c, "POST", fmt.Sprintf("%s/%s", c.HostURL, PathGetInstanceList), req, res)
+	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathGetInstanceList), req, res)
 	if err != nil {
 		return err
 	}

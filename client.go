@@ -38,9 +38,11 @@ const (
 )
 
 type Client struct {
-	HostURL     string
-	HTTPClient  *http.Client
-	AccessToken *AccessToken
+	hostURL     string
+	httpClient  *http.Client
+	apiKey      string
+	apiSecret   string
+	accessToken *AccessToken
 }
 
 type Date struct {
@@ -49,30 +51,27 @@ type Date struct {
 	TimeZone     string `json:"timezone"`
 }
 
-func NewClient(host, clientID, clientSecret string) (*Client, error) {
-	if host == "" || clientID == "" || clientSecret == "" {
+func NewClient(host, apiKey, apiSecret string) (*Client, error) {
+	if host == "" || apiKey == "" || apiSecret == "" {
 		return nil, fmt.Errorf("Invalid parameter")
 	}
 
 	c := Client{
-		HTTPClient: &http.Client{Timeout: 30 * time.Second},
-		HostURL:    host,
+		hostURL:    host,
+		httpClient: &http.Client{Timeout: 30 * time.Second},
+		apiKey:     apiKey,
+		apiSecret:  apiSecret,
 	}
 
-	token, err := c.GenerateAccessToken(clientID, clientSecret)
-	if err != nil {
-		return nil, err
-	}
-	c.AccessToken = token
 	return &c, nil
 }
 
 func (c *Client) doRequest(req *http.Request) ([]byte, error) {
-	if c.AccessToken != nil {
-		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.AccessToken.Token))
+	if c.accessToken != nil {
+		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.accessToken.Token))
 	}
 
-	res, err := c.HTTPClient.Do(req)
+	res, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -82,11 +81,7 @@ func (c *Client) doRequest(req *http.Request) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	/*
-		fmt.Printf("----------\n")
-		fmt.Printf("%s\n", body)
-		fmt.Printf("----------\n")
-	*/
+
 	if res.StatusCode != http.StatusOK && res.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("status: %d, body: %s", res.StatusCode, body)
 	}
@@ -94,17 +89,21 @@ func (c *Client) doRequest(req *http.Request) ([]byte, error) {
 	return body, err
 }
 
-func requestWithJson[Request, Response any](c *Client, method string, url string, request *Request, response *Response) (*Response, error) {
-	var nr *strings.Reader
+func requestWithJsonNoRefresh[Request, Response any](c *Client, method string, url string, request *Request, response *Response) (*Response, error) {
+	var req *http.Request
+	var err error
+
 	if request != nil {
 		rb, err := json.Marshal(request)
 		if err != nil {
 			return nil, err
 		}
-		nr = strings.NewReader(string(rb))
+		nr := strings.NewReader(string(rb))
+		req, err = http.NewRequest(method, url, nr)
+		req.Header.Add("Content-Type", "application/json")
+	} else {
+		req, err = http.NewRequest(method, url, nil)
 	}
-
-	req, err := http.NewRequest(method, url, nr)
 	if err != nil {
 		return nil, err
 	}
@@ -122,4 +121,20 @@ func requestWithJson[Request, Response any](c *Client, method string, url string
 	}
 
 	return response, nil
+}
+
+func requestWithJson[Request, Response any](c *Client, method string, url string, request *Request, response *Response) (*Response, error) {
+	// NOTE: Avoiding "Too many requests error" or "Spike arrest violation error".
+	//   API server often returns the errors even if the client calls an API with more than 10s interval!
+	//   API server says
+	//     "Allowed rate : MessageRate{messagesPerPeriod=2, periodInMicroseconds=1000000, maxBurstMessageCount=1.0}",
+	//     which means 2 messages per 1s is allowed??
+	//   It seems using refreshed AccessToken alleviates this issue even though requests increase.
+	err := c.RefreshAccessToken()
+	if err != nil {
+		return nil, err
+	}
+	time.Sleep(time.Second * 10)
+
+	return requestWithJsonNoRefresh(c, method, url, request, response)
 }

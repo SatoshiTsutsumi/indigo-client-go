@@ -4,25 +4,36 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"time"
 )
 
 var client *Client
-var key *SSHKey
+var instanceKey *SSHKey
 
 func TestMain(m *testing.M) {
 	var err error
 	client, err = NewClient("https://api.customer.jp", os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
 	if err != nil {
+		fmt.Printf("%v", err)
 		os.Exit(-1)
 	}
-	key, err = client.CreateSSHKey(
-		"testkey",
+	time.Sleep(time.Second * 12)
+	instanceKey, err = client.CreateSSHKey(
+		"instanceTestSSHKey",
 		sshKeyString1,
 	)
-	fmt.Printf("%v", key)
 	if err != nil {
+		fmt.Printf("%v", err)
 		os.Exit(-1)
 	}
 	exitStatus := m.Run()
+
+	time.Sleep(time.Second * 15)
+	err = client.DeleteSSHKey(instanceKey.ID)
+	if err != nil {
+		fmt.Printf("%v", err)
+		os.Exit(-1)
+	}
+
 	os.Exit(exitStatus)
 }

@@ -41,7 +41,7 @@ func (c *Client) CreateSnapshot(name string, instanceID int) error {
 		SlotNum:    0,
 	}
 	res := &SnapshotResultResponse{}
-	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.HostURL, PathCreateSnapshot), req, res)
+	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathCreateSnapshot), req, res)
 	if err != nil {
 		return err
 	}
@@ -51,7 +51,7 @@ func (c *Client) CreateSnapshot(name string, instanceID int) error {
 
 func (c *Client) GetSnapshotList(instanceID int) ([]*Snapshot, error) {
 	res := &[]*Snapshot{}
-	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s/%d", c.HostURL, PathSnapshotList, instanceID), nil, res)
+	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s/%d", c.hostURL, PathSnapshotList, instanceID), nil, res)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (c *Client) RecreateSnapshot(instanceID, snapshotID int) error {
 		SnapshotID: snapshotID,
 	}
 	res := &SnapshotResultResponse{}
-	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.HostURL, PathRecreateSnapshot), req, res)
+	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathRecreateSnapshot), req, res)
 	if err != nil {
 		return err
 	}
@@ -79,7 +79,7 @@ func (c *Client) RestoreSnapshot(instanceID, snapshotID int) error {
 		SnapshotID: snapshotID,
 	}
 	res := &SnapshotResultResponse{}
-	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.HostURL, PathRestoreSnapshot), req, res)
+	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathRestoreSnapshot), req, res)
 	if err != nil {
 		return err
 	}
@@ -89,7 +89,7 @@ func (c *Client) RestoreSnapshot(instanceID, snapshotID int) error {
 
 func (c *Client) DeleteSnapshot(id int) error {
 	res := &SnapshotResultResponse{}
-	res, err := requestWithJson[any](c, "DELETE", fmt.Sprintf("%s/%s/%d", c.HostURL, PathDeleteSnapshot), nil, res)
+	res, err := requestWithJson[any](c, "DELETE", fmt.Sprintf("%s/%s/%d", c.hostURL, PathDeleteSnapshot, id), nil, res)
 	if err != nil {
 		return err
 	}

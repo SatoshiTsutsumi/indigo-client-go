@@ -49,34 +49,37 @@ func (c *Client) CreateSSHKey(sshName, sshKey string) (*SSHKey, error) {
 		Key:  sshKey,
 	}
 	res := &SSHKeyResponse{}
-	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.HostURL, PathSSHKey), req, res)
+	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathSSHKey), req, res)
 	if err != nil {
 		return nil, err
 	}
+
 	return res.Key, nil
 }
 
 func (c *Client) GetSSHKeyList() ([]*SSHKey, error) {
 	res := &SSHKeyListResponse{}
-	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.HostURL, PathSSHKey), nil, res)
+	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.hostURL, PathSSHKey), nil, res)
 	if err != nil {
 		return nil, err
 	}
+
 	return res.Keys, nil
 }
 
 func (c *Client) GetActiveSSHKeyList() ([]*SSHKey, error) {
 	res := &SSHKeyListResponse{}
-	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.HostURL, PathActiveSSHKey), nil, res)
+	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.hostURL, PathActiveSSHKey), nil, res)
 	if err != nil {
 		return nil, err
 	}
+
 	return res.Keys, nil
 }
 
 func (c *Client) RetrieveSSHKey(sshKeyID int) (*SSHKey, error) {
 	res := &SSHKeyRetrieveResponse{}
-	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s/%d", c.HostURL, PathSSHKey, sshKeyID), nil, res)
+	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s/%d", c.hostURL, PathSSHKey, sshKeyID), nil, res)
 	if err != nil {
 		return nil, err
 	}
@@ -93,19 +96,21 @@ func (c *Client) UpdateSSHKey(sshKeyID int, sshName, sshKey, sshKeyStatus string
 		Key:       sshKey,
 		KeyStatus: sshKeyStatus,
 	}
-	res := SSHKeyBoolResponse{}
-	res, err := requestWithJson(c, "PUT", fmt.Sprintf("%s/%s/%d", c.HostURL, PathSSHKey, sshKeyID), req, res)
+	res := &SSHKeyBoolResponse{}
+	res, err := requestWithJson(c, "PUT", fmt.Sprintf("%s/%s/%d", c.hostURL, PathSSHKey, sshKeyID), req, res)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
-func (c *Client) DestroySSHKey(sshKeyID int) error {
-	res := SSHKeyBoolResponse{}
-	res, err := requestWithJson[any](c, "DELETE", fmt.Sprintf("%s/%s/%d", c.HostURL, PathSSHKey, sshKeyID), nil, res)
+func (c *Client) DeleteSSHKey(sshKeyID int) error {
+	res := &SSHKeyBoolResponse{}
+	res, err := requestWithJson[any](c, "DELETE", fmt.Sprintf("%s/%s/%d", c.hostURL, PathSSHKey, sshKeyID), nil, res)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }

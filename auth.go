@@ -1,10 +1,7 @@
 package indigo
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
-	"strings"
 )
 
 type AccessTokenRequest struct {
@@ -27,34 +24,21 @@ type APIKey struct {
 	APISecret string `json:"apiSecret"`
 }
 
-func (c *Client) GenerateAccessToken(apiKey, apiSecret string) (*AccessToken, error) {
-	payload := &AccessTokenRequest{
+func (c *Client) RefreshAccessToken() error {
+	c.accessToken = nil
+	req := &AccessTokenRequest{
 		GrantType:    "client_credentials",
-		ClientID:     apiKey,
-		ClientSecret: apiSecret,
+		ClientID:     c.apiKey,
+		ClientSecret: c.apiSecret,
 		Code:         "",
 	}
-	rb, err := json.Marshal(payload)
+	res := &AccessToken{}
+	res, err := requestWithJsonNoRefresh(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathAccessToken), req, res)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/%s", c.HostURL, PathAccessToken), strings.NewReader(string(rb)))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Add("Content-Type", "application/json")
+	c.accessToken = res
 
-	body, err := c.doRequest(req)
-	if err != nil {
-		return nil, err
-	}
-
-	res := AccessToken{}
-	err = json.Unmarshal(body, &res)
-	if err != nil {
-		return nil, err
-	}
-
-	return &res, nil
+	return nil
 }

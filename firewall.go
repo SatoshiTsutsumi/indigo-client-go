@@ -72,7 +72,7 @@ func (c *Client) CreateFirewall(name string, inbound []Rule, outbound []Rule, in
 		InstanceIDs: instanceIDs,
 	}
 	res := &FirewallResponse{}
-	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.HostURL, PathCreateFirewall), req, res)
+	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathCreateFirewall), req, res)
 	if err != nil {
 		return -1, err
 	}
@@ -83,7 +83,7 @@ func (c *Client) CreateFirewall(name string, inbound []Rule, outbound []Rule, in
 func (c *Client) GetFirewallList() ([]*FirewallIndex, error) {
 
 	res := &[]*FirewallIndex{}
-	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.HostURL, PathGetFirewallList), nil, res)
+	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.hostURL, PathGetFirewallList), nil, res)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +93,7 @@ func (c *Client) GetFirewallList() ([]*FirewallIndex, error) {
 
 func (c *Client) RetrieveFirewall(id int) (*Firewall, error) {
 	res := &[]*FirewallEntry{}
-	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s/%d", c.HostURL, PathRetrieveFirewall, id), nil, res)
+	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s/%d", c.hostURL, PathRetrieveFirewall, id), nil, res)
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +128,7 @@ func (c *Client) UpdateFirewall(id int, name string, inbound []Rule, outbound []
 		InstanceIDs: instanceIDs,
 	}
 	res := &FirewallResponse{}
-	res, err := requestWithJson(c, "PUT", fmt.Sprintf("%s/%s/%d", c.HostURL, PathUpdateFirewall, id), req, res)
+	res, err := requestWithJson(c, "PUT", fmt.Sprintf("%s/%s/%d", c.hostURL, PathUpdateFirewall, id), req, res)
 	if err != nil {
 		return err
 	}
@@ -142,7 +142,7 @@ func (c *Client) AssignFirewall(templateID, instanceID int) error {
 		InstanceID: instanceID,
 	}
 	res := &FirewallOperationResponse{}
-	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.HostURL, PathAssignFirewall), req, res)
+	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathAssignFirewall), req, res)
 	if err != nil {
 		return err
 	}
@@ -152,7 +152,7 @@ func (c *Client) AssignFirewall(templateID, instanceID int) error {
 
 func (c *Client) DeleteFirewall(id int) error {
 	res := &FirewallOperationResponse{}
-	res, err := requestWithJson[any](c, "DELETE", fmt.Sprintf("%s/%s/%d", c.HostURL, PathDeleteFirewall, id), nil, res)
+	res, err := requestWithJson[any](c, "DELETE", fmt.Sprintf("%s/%s/%d", c.hostURL, PathDeleteFirewall, id), nil, res)
 	if err != nil {
 		return err
 	}
