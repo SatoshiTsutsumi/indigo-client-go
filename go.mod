@@ -1,4 +1,4 @@
-module github.com/UndefxDev/webarena-client-go
+module github.com/UndefxDev/indigo-client-go
 
 go 1.18
 
