@@ -5,11 +5,11 @@ import (
 )
 
 type FirewallRequest struct {
-	TemplateID  int    `json:"templateid,omitempty"`
-	Name        string `json:"name"`
-	Inbound     []Rule `json:"inbound"`
-	Outbound    []Rule `json:"outbound"`
-	InstanceIDs []int  `json:"instances"`
+	TemplateID  int     `json:"templateid,omitempty"`
+	Name        string  `json:"name"`
+	Inbound     []*Rule `json:"inbound"`
+	Outbound    []*Rule `json:"outbound"`
+	InstanceIDs []int   `json:"instances"`
 }
 
 type FirewallAssignRequest struct {
@@ -33,7 +33,7 @@ type FirewallOperationResponse struct {
 type Rule struct {
 	Type     string `json:"type"`
 	Protocol string `json:"protocol"`
-	Port     int    `json:"port"`
+	Port     string `json:"port"`
 	Source   string `json:"source"`
 }
 
@@ -53,18 +53,18 @@ type FirewallEntry struct {
 	Direction string `json:"direction"`
 	Type      string `json:"type"`
 	Protocol  string `json:"protocol"`
-	Port      int    `json:"port"`
+	Port      string `json:"port"`
 	Source    string `json:"source"`
 }
 
 type Firewall struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Inbound  []Rule `json:"inbound"`
-	Outbound []Rule `json:"outbound"`
+	ID       int     `json:"id"`
+	Name     string  `json:"name"`
+	Inbound  []*Rule `json:"inbound"`
+	Outbound []*Rule `json:"outbound"`
 }
 
-func (c *Client) CreateFirewall(name string, inbound []Rule, outbound []Rule, instanceIDs []int) (int, error) {
+func (c *Client) CreateFirewall(name string, inbound []*Rule, outbound []*Rule, instanceIDs []int) (int, error) {
 	req := &FirewallRequest{
 		Name:        name,
 		Inbound:     inbound,
@@ -111,15 +111,15 @@ func (c *Client) RetrieveFirewall(id int) (*Firewall, error) {
 			Source:   e.Source,
 		}
 		if e.Direction == "in" {
-			firewall.Inbound = append(firewall.Inbound, rule)
+			firewall.Inbound = append(firewall.Inbound, &rule)
 		} else {
-			firewall.Outbound = append(firewall.Outbound, rule)
+			firewall.Outbound = append(firewall.Outbound, &rule)
 		}
 	}
 	return firewall, nil
 }
 
-func (c *Client) UpdateFirewall(id int, name string, inbound []Rule, outbound []Rule, instanceIDs []int) error {
+func (c *Client) UpdateFirewall(id int, name string, inbound []*Rule, outbound []*Rule, instanceIDs []int) error {
 	req := &FirewallRequest{
 		TemplateID:  id,
 		Name:        name,
@@ -128,7 +128,7 @@ func (c *Client) UpdateFirewall(id int, name string, inbound []Rule, outbound []
 		InstanceIDs: instanceIDs,
 	}
 	res := &FirewallResponse{}
-	res, err := requestWithJson(c, "PUT", fmt.Sprintf("%s/%s/%d", c.hostURL, PathUpdateFirewall, id), req, res)
+	res, err := requestWithJson(c, "PUT", fmt.Sprintf("%s/%s", c.hostURL, PathUpdateFirewall), req, res)
 	if err != nil {
 		return err
 	}

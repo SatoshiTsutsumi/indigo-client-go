@@ -3,12 +3,10 @@ package indigo
 import (
 	"os"
 	"testing"
-	"time"
 )
 
 func TestNewClient(t *testing.T) {
-	time.Sleep(time.Second * 12)
-	c, err := NewClient("https://api.customer.jp", os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
+	c, err := NewClient("https://api.customer.jp", os.Getenv("API_KEY"), os.Getenv("API_SECRET"), false)
 	if c == nil {
 		t.Fatalf("NewClient() = %v, want %v (%v)", c, "'not nil'", err)
 	}

@@ -121,7 +121,7 @@ type NewInstance struct {
 	InstanceName     string `json:"instance_name"`
 	InstanceTypeID   int    `json:"instance_type"`
 	SetNo            int    `json:"set_no"`
-	VPSKind          int    `json:"vps_kind"`
+	VPSKind          string `json:"vps_kind"`
 	SequenceID       int    `json:"sequence_id"`
 	UserID           int    `json:"user_id"`
 	ServiceID        string `json:"service_id"`
@@ -336,4 +336,8 @@ func (c *Client) UpdateInstanceStatus(instanceID int, status string) error {
 	}
 
 	return nil
+}
+
+func (c *Client) DeleteInstance(instanceID int) error {
+	return c.UpdateInstanceStatus(instanceID, "destroy")
 }

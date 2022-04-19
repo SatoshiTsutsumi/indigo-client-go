@@ -38,11 +38,12 @@ const (
 )
 
 type Client struct {
-	hostURL     string
-	httpClient  *http.Client
-	apiKey      string
-	apiSecret   string
-	accessToken *AccessToken
+	hostURL       string
+	httpClient    *http.Client
+	apiKey        string
+	apiSecret     string
+	accessToken   *AccessToken
+	AutoRateLimit bool
 }
 
 type Date struct {
@@ -51,16 +52,17 @@ type Date struct {
 	TimeZone     string `json:"timezone"`
 }
 
-func NewClient(host, apiKey, apiSecret string) (*Client, error) {
+func NewClient(host, apiKey, apiSecret string, autoRateLimit bool) (*Client, error) {
 	if host == "" || apiKey == "" || apiSecret == "" {
-		return nil, fmt.Errorf("Invalid parameter")
+		return nil, fmt.Errorf("Error NewClient(): Invalid parameter(host, apiKey, apiSecret required)")
 	}
 
 	c := Client{
-		hostURL:    host,
-		httpClient: &http.Client{Timeout: 30 * time.Second},
-		apiKey:     apiKey,
-		apiSecret:  apiSecret,
+		hostURL:       host,
+		httpClient:    &http.Client{Timeout: 30 * time.Second},
+		apiKey:        apiKey,
+		apiSecret:     apiSecret,
+		AutoRateLimit: autoRateLimit,
 	}
 
 	return &c, nil
@@ -130,11 +132,14 @@ func requestWithJson[Request, Response any](c *Client, method string, url string
 	//     "Allowed rate : MessageRate{messagesPerPeriod=2, periodInMicroseconds=1000000, maxBurstMessageCount=1.0}",
 	//     which means 2 messages per 1s is allowed??
 	//   It seems using refreshed AccessToken alleviates this issue even though requests increase.
+	if c.AutoRateLimit {
+		time.Sleep(time.Second * 12)
+	}
 	err := c.RefreshAccessToken()
 	if err != nil {
 		return nil, err
 	}
-	time.Sleep(time.Second * 10)
+	time.Sleep(time.Second * 12)
 
 	return requestWithJsonNoRefresh(c, method, url, request, response)
 }

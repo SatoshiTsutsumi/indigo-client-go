@@ -3,11 +3,9 @@ package indigo
 import (
 	"fmt"
 	"testing"
-	"time"
 )
 
 func TestGetRegionList(t *testing.T) {
-	time.Sleep(time.Second * 12)
 	regions, err := client.GetRegionList()
 	if err != nil || len(regions) == 0 {
 		t.Errorf("GetRegionList() = %v, want %v", err, "'not nil'")
@@ -15,7 +13,6 @@ func TestGetRegionList(t *testing.T) {
 }
 
 func TestGetInstanceTypeList(t *testing.T) {
-	time.Sleep(time.Second * 12)
 	types, err := client.GetInstanceTypeList()
 	if err != nil {
 		t.Fatalf("GetInstanceTypeList() = %v, want %v", err, "'nil'")
@@ -24,7 +21,6 @@ func TestGetInstanceTypeList(t *testing.T) {
 }
 
 func TestGetOSList(t *testing.T) {
-	time.Sleep(time.Second * 12)
 	oss, err := client.GetOSList()
 	if err != nil {
 		t.Fatalf("GetOSList() = %v, want %v", err, "'nil'")
@@ -33,7 +29,6 @@ func TestGetOSList(t *testing.T) {
 }
 
 func TestGetInstanceSpecList(t *testing.T) {
-	time.Sleep(time.Second * 12)
 	oss, err := client.GetInstanceSpecList()
 	if err != nil {
 		t.Fatalf("GetInstanceSpecList() = %v, want %v", err, "'nil'")
@@ -43,20 +38,18 @@ func TestGetInstanceSpecList(t *testing.T) {
 	}
 }
 
-var instance *NewInstance
+var instanceForTestInstance *NewInstance
 
 func TestCreateInstance(t *testing.T) {
 	var err error
-	time.Sleep(time.Second * 12)
-	instance, err = client.CreateInstance(instanceKey.ID, 1, 4, 1, "VM00")
+	instanceForTestInstance, err = client.CreateInstance(sshKeyForTest.ID, 1, 1, 1, "VM00")
 	if err != nil {
 		t.Fatalf("CreateInstance() = %v, want %v", err, "'nil'")
 	}
-	fmt.Printf("%v", instance)
+	fmt.Printf("%v", instanceForTestInstance)
 }
 
 func TestGetInstanceList(t *testing.T) {
-	time.Sleep(time.Second * 12)
 	instances, err := client.GetInstanceList()
 	if err != nil {
 		t.Fatalf("GetInstanceList() = %v, want %v", err, "'nil'")
@@ -65,8 +58,7 @@ func TestGetInstanceList(t *testing.T) {
 }
 
 func TestUpdateInstanceStatus(t *testing.T) {
-	time.Sleep(time.Second * 12)
-	err := client.UpdateInstanceStatus(instance.ID, "destroy")
+	err := client.UpdateInstanceStatus(instanceForTestInstance.ID, "destroy")
 	if err != nil {
 		t.Fatalf("UpdateInstanceStatus() = %v, want %v", err, "'nil'")
 	}

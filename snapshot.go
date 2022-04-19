@@ -6,7 +6,7 @@ import (
 
 type SnapshotRequest struct {
 	Name       string `json:"name"`
-	InstanceID int    `json:"instanceId"`
+	InstanceID int    `json:"instanceid"`
 	SlotNum    int    `json:"slotnum"`
 }
 
