@@ -65,6 +65,11 @@ func NewClient(host, apiKey, apiSecret string, autoRateLimit bool) (*Client, err
 		AutoRateLimit: autoRateLimit,
 	}
 
+	err := c.RefreshAccessToken()
+	if err != nil {
+		return nil, err
+	}
+  
 	return &c, nil
 }
 
@@ -134,12 +139,13 @@ func requestWithJson[Request, Response any](c *Client, method string, url string
 	//   It seems using refreshed AccessToken alleviates this issue even though requests increase.
 	if c.AutoRateLimit {
 		time.Sleep(time.Second * 12)
+
+		err := c.RefreshAccessToken()
+		if err != nil {
+			return nil, err
+		}
+		time.Sleep(time.Second * 6)
 	}
-	err := c.RefreshAccessToken()
-	if err != nil {
-		return nil, err
-	}
-	time.Sleep(time.Second * 12)
 
 	return requestWithJsonNoRefresh(c, method, url, request, response)
 }
