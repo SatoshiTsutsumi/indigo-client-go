@@ -128,8 +128,8 @@ type NewInstance struct {
 	Status           string `json:"status"`
 	SSHKeyID         int    `json:"sshkey_id"`
 	SnapshotID       int    `json:"snapshot_id"`
-	CreatedAt        Date   `json:"created_at"`
-	StartDate        Date   `json:"start_date"`
+	CreatedAt        *Date  `json:"created_at"`
+	StartDate        *Date  `json:"start_date"`
 	HostID           int    `json:"host_id"`
 	Plan             string `json:"plan"`
 	PlanID           int    `json:"plan_id"`
