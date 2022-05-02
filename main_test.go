@@ -9,7 +9,7 @@ import (
 
 var client *Client
 var sshKeyForTest *SSHKey
-var instanceForTest *NewInstance
+var instanceForTest *Instance
 
 func TestMain(m *testing.M) {
 	// SetUp
