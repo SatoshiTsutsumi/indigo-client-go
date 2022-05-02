@@ -54,7 +54,7 @@ type Date struct {
 
 func NewClient(host, apiKey, apiSecret string, autoRateLimit bool) (*Client, error) {
 	if host == "" || apiKey == "" || apiSecret == "" {
-		return nil, fmt.Errorf("Error NewClient(): Invalid parameter(host, apiKey, apiSecret required)")
+		return nil, fmt.Errorf("error NewClient(): Invalid parameter(host, apiKey, apiSecret required)")
 	}
 
 	c := Client{
@@ -69,7 +69,7 @@ func NewClient(host, apiKey, apiSecret string, autoRateLimit bool) (*Client, err
 	if err != nil {
 		return nil, err
 	}
-  
+
 	return &c, nil
 }
 
@@ -101,7 +101,8 @@ func requestWithJsonNoRefresh[Request, Response any](c *Client, method string, u
 	var err error
 
 	if request != nil {
-		rb, err := json.Marshal(request)
+		var rb []byte
+		rb, err = json.Marshal(request)
 		if err != nil {
 			return nil, err
 		}

@@ -45,9 +45,9 @@ type InstanceSpecListResponse struct {
 }
 
 type InstanceResponse struct {
-	Success  bool         `json:"success"`
-	Message  string       `json:"message"`
-	Instance *NewInstance `json:"vms"`
+	Success  bool      `json:"success"`
+	Message  string    `json:"message"`
+	Instance *Instance `json:"vms"`
 }
 
 type InstanceStatusResponse struct {
@@ -116,7 +116,7 @@ type OS struct {
 }
 
 // FIXME
-type NewInstance struct {
+type Instance struct {
 	ID               int    `json:"id"`
 	InstanceName     string `json:"instance_name"`
 	InstanceTypeID   int    `json:"instance_type"`
@@ -147,53 +147,7 @@ type NewInstance struct {
 	StartedAt        *Date  `json:"started_at,omitempty"`
 	ClosedAt         *Date  `json:"closed_at,omitempty"`
 	StatusChangeDate *Date  `json:"status_change_date"`
-	UpdatedAt        string `json:"updated_at"`
-	VMRevert         int    `json:"vm_revert"`
-	IPAddress        string `json:"ipaddress,omitempty"`
-	MACAddress       string `json:"macaddress,omitempty"`
-	ImportInstance   int    `json:"import_instance"`
-	ContainerID      int    `json:"container_id,omitempty"`
-	DaemonStatus     string `json:"daemonstatus"`
-	OutOfStock       int    `json:"outofstock"`
-	IPAddressType    string `json:"ipaddress_type"`
-	VEID             string `json:"VEID,omitempty"`
-	OS               *OS    `json:"os,omitempty"`
-	IP               string `json:"ip,omitempty"`
-}
-
-// FIXME
-type Instance struct {
-	ID               int    `json:"id"`
-	InstanceName     string `json:"instance_name"`
-	InstanceTypeID   int    `json:"instance_type"`
-	SetNo            int    `json:"set_no"`
-	VPSKind          int    `json:"vps_kind"`
-	SequenceID       int    `json:"sequence_id"`
-	UserID           int    `json:"user_id"`
-	ServiceID        string `json:"service_id"`
-	Status           string `json:"status"`
-	SSHKeyID         int    `json:"sshkey_id"`
-	SnapshotID       int    `json:"snapshot_id"`
-	CreatedAt        *Date  `json:"created_at"`
-	StartDate        *Date  `json:"start_date"`
-	HostID           int    `json:"host_id"`
-	Plan             string `json:"plan"`
-	PlanID           int    `json:"plan_id"`
-	DiskPoint        int    `json:"disk_point"`
-	MemSize          int    `json:"memsize"`
-	CPUs             int    `json:"cpus"`
-	OSID             int    `json:"os_id"`
-	OtherStatus      int    `json:"otherstatus"`
-	UUID             string `json:"uuid"`
-	UIDGID           int    `json:"uidgid"`
-	VNCPort          int    `json:"vnc_port"`
-	VNCPasswd        string `json:"vnc_passwd"`
-	ARPAName         string `json:"arpaname"`
-	ARPADate         int    `json:"arpadate"`
-	StartedAt        *Date  `json:"started_at,omitempty"`
-	ClosedAt         *Date  `json:"closed_at,omitempty"`
-	StatusChangeDate *Date  `json:"status_change_date"`
-	UpdatedAt        string `json:"updated_at"`
+	UpdatedAt        *Date  `json:"updated_at"`
 	VMRevert         int    `json:"vm_revert"`
 	IPAddress        string `json:"ipaddress,omitempty"`
 	MACAddress       string `json:"macaddress,omitempty"`
@@ -247,7 +201,7 @@ func (c *Client) GetInstanceSpecList() ([]*InstanceSpec, error) {
 	return res.Specs, nil
 }
 
-func (c *Client) CreateInstance(sshKeyID int, regionID int, osID int, plan int, name string) (*NewInstance, error) {
+func (c *Client) CreateInstance(sshKeyID int, regionID int, osID int, plan int, name string) (*Instance, error) {
 	req := &InstanceRequest{
 		SSHKeyID:     sshKeyID,
 		RegionID:     regionID,
@@ -264,7 +218,7 @@ func (c *Client) CreateInstance(sshKeyID int, regionID int, osID int, plan int, 
 	return res.Instance, nil
 }
 
-func (c *Client) CreateWindowsInstance(winPassword string, regionID int, osID int, plan int, name string) (*NewInstance, error) {
+func (c *Client) CreateWindowsInstance(winPassword string, regionID int, osID int, plan int, name string) (*Instance, error) {
 	req := &InstanceRequest{
 		WinPassword:  winPassword,
 		RegionID:     regionID,
@@ -281,7 +235,7 @@ func (c *Client) CreateWindowsInstance(winPassword string, regionID int, osID in
 	return res.Instance, nil
 }
 
-func (c *Client) CreateImportInstance(url string, regionID int, osID int, plan int, name string) (*NewInstance, error) {
+func (c *Client) CreateImportInstance(url string, regionID int, osID int, plan int, name string) (*Instance, error) {
 	req := &InstanceRequest{
 		ImportURL:    url,
 		RegionID:     regionID,
@@ -298,7 +252,7 @@ func (c *Client) CreateImportInstance(url string, regionID int, osID int, plan i
 	return res.Instance, nil
 }
 
-func (c *Client) CreateSnapshotInstance(sshKeyID int, snapshotID int, plan int, name string) (*NewInstance, error) {
+func (c *Client) CreateSnapshotInstance(sshKeyID int, snapshotID int, plan int, name string) (*Instance, error) {
 	req := &InstanceRequest{
 		SSHKeyID:     sshKeyID,
 		SnapshotID:   snapshotID,
@@ -330,7 +284,7 @@ func (c *Client) UpdateInstanceStatus(instanceID int, status string) error {
 		Status:     status,
 	}
 	res := &InstanceStatusResponse{}
-	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathGetInstanceList), req, res)
+	_, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathGetInstanceList), req, res)
 	if err != nil {
 		return err
 	}

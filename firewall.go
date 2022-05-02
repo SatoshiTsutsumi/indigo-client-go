@@ -128,7 +128,7 @@ func (c *Client) UpdateFirewall(id int, name string, inbound []*Rule, outbound [
 		InstanceIDs: instanceIDs,
 	}
 	res := &FirewallResponse{}
-	res, err := requestWithJson(c, "PUT", fmt.Sprintf("%s/%s", c.hostURL, PathUpdateFirewall), req, res)
+	_, err := requestWithJson(c, "PUT", fmt.Sprintf("%s/%s", c.hostURL, PathUpdateFirewall), req, res)
 	if err != nil {
 		return err
 	}
@@ -142,7 +142,7 @@ func (c *Client) AssignFirewall(templateID, instanceID int) error {
 		InstanceID: instanceID,
 	}
 	res := &FirewallOperationResponse{}
-	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathAssignFirewall), req, res)
+	_, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathAssignFirewall), req, res)
 	if err != nil {
 		return err
 	}
@@ -152,7 +152,7 @@ func (c *Client) AssignFirewall(templateID, instanceID int) error {
 
 func (c *Client) DeleteFirewall(id int) error {
 	res := &FirewallOperationResponse{}
-	res, err := requestWithJson[any](c, "DELETE", fmt.Sprintf("%s/%s/%d", c.hostURL, PathDeleteFirewall, id), nil, res)
+	_, err := requestWithJson[any](c, "DELETE", fmt.Sprintf("%s/%s/%d", c.hostURL, PathDeleteFirewall, id), nil, res)
 	if err != nil {
 		return err
 	}

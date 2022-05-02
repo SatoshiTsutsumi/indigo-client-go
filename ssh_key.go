@@ -84,7 +84,7 @@ func (c *Client) RetrieveSSHKey(sshKeyID int) (*SSHKey, error) {
 		return nil, err
 	}
 	if len(res.Keys) != 1 {
-		return nil, fmt.Errorf("Invalid response: %v", res)
+		return nil, fmt.Errorf("invalid response: %v", res)
 	}
 
 	return res.Keys[0], nil
@@ -97,7 +97,7 @@ func (c *Client) UpdateSSHKey(sshKeyID int, sshName, sshKey, sshKeyStatus string
 		KeyStatus: sshKeyStatus,
 	}
 	res := &SSHKeyBoolResponse{}
-	res, err := requestWithJson(c, "PUT", fmt.Sprintf("%s/%s/%d", c.hostURL, PathSSHKey, sshKeyID), req, res)
+	_, err := requestWithJson(c, "PUT", fmt.Sprintf("%s/%s/%d", c.hostURL, PathSSHKey, sshKeyID), req, res)
 	if err != nil {
 		return err
 	}
@@ -107,7 +107,7 @@ func (c *Client) UpdateSSHKey(sshKeyID int, sshName, sshKey, sshKeyStatus string
 
 func (c *Client) DeleteSSHKey(sshKeyID int) error {
 	res := &SSHKeyBoolResponse{}
-	res, err := requestWithJson[any](c, "DELETE", fmt.Sprintf("%s/%s/%d", c.hostURL, PathSSHKey, sshKeyID), nil, res)
+	_, err := requestWithJson[any](c, "DELETE", fmt.Sprintf("%s/%s/%d", c.hostURL, PathSSHKey, sshKeyID), nil, res)
 	if err != nil {
 		return err
 	}
