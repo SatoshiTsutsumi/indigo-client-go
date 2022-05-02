@@ -268,14 +268,14 @@ func (c *Client) CreateSnapshotInstance(sshKeyID int, snapshotID int, plan int, 
 	return res.Instance, nil
 }
 
-func (c *Client) GetInstanceList() (*Instance, error) {
-	res := &Instance{}
+func (c *Client) GetInstanceList() ([]*Instance, error) {
+	res := &[]*Instance{}
 	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.hostURL, PathGetInstanceList), nil, res)
 	if err != nil {
 		return nil, err
 	}
 
-	return res, nil
+	return *res, nil
 }
 
 func (c *Client) UpdateInstanceStatus(instanceID int, status string) error {
