@@ -41,7 +41,7 @@ func (c *Client) CreateSnapshot(name string, instanceID int) error {
 		SlotNum:    0,
 	}
 	res := &SnapshotResultResponse{}
-	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathCreateSnapshot), req, res)
+	_, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathCreateSnapshot), req, res)
 	if err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func (c *Client) RecreateSnapshot(instanceID, snapshotID int) error {
 		SnapshotID: snapshotID,
 	}
 	res := &SnapshotResultResponse{}
-	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathRecreateSnapshot), req, res)
+	_, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathRecreateSnapshot), req, res)
 	if err != nil {
 		return err
 	}
@@ -79,7 +79,7 @@ func (c *Client) RestoreSnapshot(instanceID, snapshotID int) error {
 		SnapshotID: snapshotID,
 	}
 	res := &SnapshotResultResponse{}
-	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathRestoreSnapshot), req, res)
+	_, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathRestoreSnapshot), req, res)
 	if err != nil {
 		return err
 	}
@@ -89,7 +89,7 @@ func (c *Client) RestoreSnapshot(instanceID, snapshotID int) error {
 
 func (c *Client) DeleteSnapshot(id int) error {
 	res := &SnapshotResultResponse{}
-	res, err := requestWithJson[any](c, "DELETE", fmt.Sprintf("%s/%s/%d", c.hostURL, PathDeleteSnapshot, id), nil, res)
+	_, err := requestWithJson[any](c, "DELETE", fmt.Sprintf("%s/%s/%d", c.hostURL, PathDeleteSnapshot, id), nil, res)
 	if err != nil {
 		return err
 	}

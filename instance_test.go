@@ -38,7 +38,7 @@ func TestGetInstanceSpecList(t *testing.T) {
 	}
 }
 
-var instanceForTestInstance *NewInstance
+var instanceForTestInstance *Instance
 
 func TestCreateInstance(t *testing.T) {
 	var err error
