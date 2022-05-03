@@ -121,14 +121,14 @@ type Instance struct {
 	InstanceName     string      `json:"instance_name"`
 	InstanceTypeID   int         `json:"instance_type"`
 	SetNo            int         `json:"set_no"`
-	VPSKind          interface{} `json:"vps_kind"` // NOTE: API returns string when creation else number !!
+	VPSKind          interface{} `json:"vps_kind"` // NOTE: API returns string when creating else number!!
 	SequenceID       int         `json:"sequence_id"`
 	UserID           int         `json:"user_id"`
 	ServiceID        string      `json:"service_id"`
 	Status           string      `json:"status"`
 	SSHKeyID         int         `json:"sshkey_id"`
 	SnapshotID       int         `json:"snapshot_id"`
-	CreatedAt        *Date       `json:"created_at"`
+	CreatedAt        interface{} `json:"created_at"` // NOTE: API returns Date when creating else string!!
 	StartDate        *Date       `json:"start_date"`
 	HostID           int         `json:"host_id"`
 	Plan             string      `json:"plan"`
