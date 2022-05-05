@@ -2,6 +2,9 @@ package indigo
 
 import (
 	"fmt"
+	"reflect"
+	"strconv"
+	"time"
 )
 
 type InstanceRequest struct {
@@ -117,48 +120,55 @@ type OS struct {
 
 // FIXME
 type Instance struct {
-	ID               int         `json:"id"`
-	InstanceName     string      `json:"instance_name"`
-	InstanceTypeID   int         `json:"instance_type"`
-	SetNo            int         `json:"set_no"`
-	VPSKind          interface{} `json:"vps_kind"` // NOTE: API returns string when creating else number!!
-	SequenceID       int         `json:"sequence_id"`
-	UserID           int         `json:"user_id"`
-	ServiceID        string      `json:"service_id"`
-	Status           string      `json:"status"`
-	SSHKeyID         int         `json:"sshkey_id"`
-	SnapshotID       int         `json:"snapshot_id"`
-	CreatedAt        interface{} `json:"created_at"` // NOTE: API returns Date when creating else string!!
-	StartDate        *Date       `json:"start_date"`
-	HostID           int         `json:"host_id"`
-	Plan             string      `json:"plan"`
-	PlanID           int         `json:"plan_id"`
-	DiskPoint        int         `json:"disk_point"`
-	MemSize          int         `json:"memsize"`
-	CPUs             int         `json:"cpus"`
-	OSID             int         `json:"os_id"`
-	OtherStatus      int         `json:"otherstatus"`
-	UUID             string      `json:"uuid"`
-	UIDGID           int         `json:"uidgid"`
-	VNCPort          int         `json:"vnc_port"`
-	VNCPasswd        string      `json:"vnc_passwd"`
-	ARPAName         string      `json:"arpaname"`
-	ARPADate         int         `json:"arpadate"`
-	StartedAt        *Date       `json:"started_at,omitempty"`
-	ClosedAt         *Date       `json:"closed_at,omitempty"`
-	StatusChangeDate *Date       `json:"status_change_date"`
-	UpdatedAt        *Date       `json:"updated_at"`
-	VMRevert         int         `json:"vm_revert"`
-	IPAddress        string      `json:"ipaddress,omitempty"`
-	MACAddress       string      `json:"macaddress,omitempty"`
-	ImportInstance   int         `json:"import_instance"`
-	ContainerID      int         `json:"container_id,omitempty"`
-	DaemonStatus     string      `json:"daemonstatus"`
-	OutOfStock       int         `json:"outofstock"`
-	IPAddressType    string      `json:"ipaddress_type"`
-	VEID             string      `json:"VEID,omitempty"`
-	OS               *OS         `json:"os,omitempty"`
-	IP               string      `json:"ip,omitempty"`
+	ID                 int         `json:"id"`
+	InstanceName       string      `json:"instance_name"`
+	InstanceTypeID     int         `json:"instance_type"`
+	SetNo              int         `json:"set_no"`
+	VPSKindIf          interface{} `json:"vps_kind"` // NOTE: For Unmarshal as API returns string when creating else number!!
+	VPSKind            int         `json:"-"`
+	SequenceID         int         `json:"sequence_id"`
+	UserID             int         `json:"user_id"`
+	ServiceID          string      `json:"service_id"`
+	Status             string      `json:"status"`
+	SSHKeyID           int         `json:"sshkey_id"`
+	SnapshotID         int         `json:"snapshot_id"`
+	CreatedAtIf        interface{} `json:"created_at"` // NOTE: For Unmarshal as API returns Date when creating else string!!
+	CreatedAt          string      `json:"-"`
+	StartDateIf        interface{} `json:"start_date"` // NOTE: For Unmarshal as API returns Date when creating else string!!
+	StartDate          string      `json:"-"`
+	HostID             int         `json:"host_id"`
+	Plan               string      `json:"plan"`
+	PlanID             int         `json:"plan_id"`
+	DiskPoint          int         `json:"disk_point"`
+	MemSize            int         `json:"memsize"`
+	CPUs               int         `json:"cpus"`
+	OSID               int         `json:"os_id"`
+	OtherStatus        int         `json:"otherstatus"`
+	UUID               string      `json:"uuid"`
+	UIDGID             int         `json:"uidgid"`
+	VNCPort            int         `json:"vnc_port"`
+	VNCPasswd          string      `json:"vnc_passwd"`
+	ARPAName           string      `json:"arpaname"`
+	ARPADate           int         `json:"arpadate"`
+	StartedAtIf        interface{} `json:"started_at,omitempty"`
+	StartedAt          string      `json:"-"`
+	ClosedAtIf         interface{} `json:"closed_at,omitempty"`
+	ClosedAt           string      `json:"-"`
+	StatusChangeDateIf interface{} `json:"status_change_date"` // NOTE: For Unmarshal as API returns Date when creating else string!!
+	StatusChangeDate   string      `json:"-"`
+	UpdatedAtIf        interface{} `json:"updated_at"`
+	UpdatedAt          string      `json:"-"`
+	VMRevert           int         `json:"vm_revert"`
+	IPAddress          string      `json:"ipaddress,omitempty"`
+	MACAddress         string      `json:"macaddress,omitempty"`
+	ImportInstance     int         `json:"import_instance"`
+	ContainerID        int         `json:"container_id,omitempty"`
+	DaemonStatus       string      `json:"daemonstatus"`
+	OutOfStock         int         `json:"outofstock"`
+	IPAddressType      string      `json:"ipaddress_type"`
+	VEID               string      `json:"VEID,omitempty"`
+	OS                 *OS         `json:"os,omitempty"`
+	IP                 string      `json:"ip,omitempty"`
 }
 
 func (c *Client) GetRegionList() ([]*Region, error) {
@@ -215,7 +225,7 @@ func (c *Client) CreateInstance(sshKeyID int, regionID int, osID int, plan int, 
 		return nil, err
 	}
 
-	return res.Instance, nil
+	return fixInstanceStruct(res.Instance), nil
 }
 
 func (c *Client) CreateWindowsInstance(winPassword string, regionID int, osID int, plan int, name string) (*Instance, error) {
@@ -232,7 +242,7 @@ func (c *Client) CreateWindowsInstance(winPassword string, regionID int, osID in
 		return nil, err
 	}
 
-	return res.Instance, nil
+	return fixInstanceStruct(res.Instance), nil
 }
 
 func (c *Client) CreateImportInstance(url string, regionID int, osID int, plan int, name string) (*Instance, error) {
@@ -249,7 +259,7 @@ func (c *Client) CreateImportInstance(url string, regionID int, osID int, plan i
 		return nil, err
 	}
 
-	return res.Instance, nil
+	return fixInstanceStruct(res.Instance), nil
 }
 
 func (c *Client) CreateSnapshotInstance(sshKeyID int, snapshotID int, plan int, name string) (*Instance, error) {
@@ -265,7 +275,7 @@ func (c *Client) CreateSnapshotInstance(sshKeyID int, snapshotID int, plan int, 
 		return nil, err
 	}
 
-	return res.Instance, nil
+	return fixInstanceStruct(res.Instance), nil
 }
 
 func (c *Client) GetInstanceList() ([]*Instance, error) {
@@ -275,6 +285,9 @@ func (c *Client) GetInstanceList() ([]*Instance, error) {
 		return nil, err
 	}
 
+	for _, v := range *res {
+		fixInstanceStruct(v)
+	}
 	return *res, nil
 }
 
@@ -294,4 +307,42 @@ func (c *Client) UpdateInstanceStatus(instanceID int, status string) error {
 
 func (c *Client) DeleteInstance(instanceID int) error {
 	return c.UpdateInstanceStatus(instanceID, "destroy")
+}
+
+func fixInstanceStruct(instance *Instance) *Instance {
+
+	if reflect.TypeOf(instance.VPSKindIf).String() == "string" {
+		instance.VPSKind, _ = strconv.Atoi(instance.VPSKindIf.(string))
+	} else {
+		instance.VPSKind = int(instance.VPSKindIf.(float64))
+	}
+	instance.CreatedAt = convDate(instance.CreatedAtIf)
+	instance.StartDate = convDate(instance.StartDateIf)
+	instance.StatusChangeDate = convDate(instance.StatusChangeDateIf)
+	instance.StartedAt = convDate(instance.StartedAtIf)
+	instance.ClosedAt = convDate(instance.ClosedAtIf)
+	instance.UpdatedAt = convDate(instance.UpdatedAtIf)
+
+	return instance
+}
+
+func convDate(dateIf interface{}) string {
+	if dateIf == nil {
+		return ""
+	}
+	var t time.Time
+	var err error
+
+	if reflect.TypeOf(dateIf).String() == "string" {
+		dateStr := dateIf.(string)
+		t, err = time.Parse("2006-01-02 15:04:05", dateStr)
+	} else {
+		dateMap := dateIf.(map[string]interface{})
+		t, err = time.Parse("2006-01-02 15:04:05.000000", dateMap["date"].(string))
+	}
+	if err != nil {
+		return ""
+	}
+	z := time.FixedZone("UTC", 0)
+	return t.In(z).Format(time.RFC3339)
 }
