@@ -17,7 +17,7 @@ func TestGetInstanceTypeList(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GetInstanceTypeList() = %v, want %v", err, "'nil'")
 	}
-	fmt.Printf("%v", types)
+	fmt.Printf("%v\n", types)
 }
 
 func TestGetOSList(t *testing.T) {
@@ -25,7 +25,7 @@ func TestGetOSList(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GetOSList() = %v, want %v", err, "'nil'")
 	}
-	fmt.Printf("%v", oss)
+	fmt.Printf("%v\n", oss)
 }
 
 func TestGetInstanceSpecList(t *testing.T) {
@@ -46,7 +46,7 @@ func TestCreateInstance(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CreateInstance() = %v, want %v", err, "'nil'")
 	}
-	fmt.Printf("%v", instanceForTestInstance)
+	fmt.Printf("%v\n", instanceForTestInstance)
 }
 
 func TestGetInstanceList(t *testing.T) {
@@ -54,7 +54,7 @@ func TestGetInstanceList(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GetInstanceList() = %v, want %v", err, "'nil'")
 	}
-	fmt.Printf("%v", instances)
+	fmt.Printf("%v\n", instances)
 }
 
 func TestUpdateInstanceStatus(t *testing.T) {

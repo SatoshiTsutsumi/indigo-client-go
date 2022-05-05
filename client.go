@@ -69,7 +69,7 @@ func NewClient(host, apiKey, apiSecret string, autoRateLimit bool) (*Client, err
 	if err != nil {
 		return nil, err
 	}
-  
+
 	return &c, nil
 }
 
