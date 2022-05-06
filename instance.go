@@ -297,7 +297,7 @@ func (c *Client) UpdateInstanceStatus(instanceID int, status string) error {
 		Status:     status,
 	}
 	res := &InstanceStatusResponse{}
-	_, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathGetInstanceList), req, res)
+	_, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathInstanceStatusUpdate), req, res)
 	if err != nil {
 		return err
 	}

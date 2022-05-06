@@ -58,8 +58,15 @@ func TestGetInstanceList(t *testing.T) {
 }
 
 func TestUpdateInstanceStatus(t *testing.T) {
-	err := client.UpdateInstanceStatus(instanceForTestInstance.ID, "destroy")
+	err := client.UpdateInstanceStatus(instanceForTestInstance.ID, "stop")
 	if err != nil {
 		t.Fatalf("UpdateInstanceStatus() = %v, want %v", err, "'nil'")
+	}
+}
+
+func TestDeleteInstance(t *testing.T) {
+	err := client.DeleteInstance(instanceForTestInstance.ID)
+	if err != nil {
+		t.Fatalf("DeleteInstance() = %v, want %v", err, "'nil'")
 	}
 }

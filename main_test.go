@@ -59,7 +59,6 @@ func TestMain(m *testing.M) {
 	skipFixture := flag.Bool("skip", false, "skip fixture")
 	flag.Parse()
 
-	// SetUp
 	client, err = NewClient("https://api.customer.jp", os.Getenv("API_KEY"), os.Getenv("API_SECRET"), true)
 	if err != nil {
 		fmt.Printf("%v", err)
