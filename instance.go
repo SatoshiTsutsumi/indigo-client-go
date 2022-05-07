@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
-	"time"
 )
 
 type InstanceRequest struct {
@@ -324,25 +323,4 @@ func fixInstanceStruct(instance *Instance) *Instance {
 	instance.UpdatedAt = convDate(instance.UpdatedAtIf)
 
 	return instance
-}
-
-func convDate(dateIf interface{}) string {
-	if dateIf == nil {
-		return ""
-	}
-	var t time.Time
-	var err error
-
-	if reflect.TypeOf(dateIf).String() == "string" {
-		dateStr := dateIf.(string)
-		t, err = time.Parse("2006-01-02 15:04:05", dateStr)
-	} else {
-		dateMap := dateIf.(map[string]interface{})
-		t, err = time.Parse("2006-01-02 15:04:05.000000", dateMap["date"].(string))
-	}
-	if err != nil {
-		return ""
-	}
-	z := time.FixedZone("UTC", 0)
-	return t.In(z).Format(time.RFC3339)
 }
