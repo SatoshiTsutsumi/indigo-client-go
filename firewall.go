@@ -24,6 +24,16 @@ type FirewallResponse struct {
 	ID          int    `json:"firewallId"`
 }
 
+type FirewallRetrieveResponse struct {
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	Direction string `json:"direction"`
+	Type      string `json:"type"`
+	Protocol  string `json:"protocol"`
+	Port      string `json:"port"`
+	Source    string `json:"source"`
+}
+
 type FirewallOperationResponse struct {
 	Success     bool   `json:"success"`
 	Message     string `json:"message"`
@@ -37,7 +47,7 @@ type Rule struct {
 	Source   string `json:"source"`
 }
 
-type FirewallIndex struct {
+type FirewallListItem struct {
 	ID        int    `json:"id"`
 	ServiceID string `json:"service_id"`
 	UserID    int    `json:"user_id"`
@@ -45,16 +55,6 @@ type FirewallIndex struct {
 	Status    int    `json:"status"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
-}
-
-type FirewallEntry struct {
-	ID        int    `json:"id"`
-	Name      string `json:"name"`
-	Direction string `json:"direction"`
-	Type      string `json:"type"`
-	Protocol  string `json:"protocol"`
-	Port      string `json:"port"`
-	Source    string `json:"source"`
 }
 
 type Firewall struct {
@@ -80,19 +80,23 @@ func (c *Client) CreateFirewall(name string, inbound []*Rule, outbound []*Rule, 
 	return res.ID, nil
 }
 
-func (c *Client) GetFirewallList() ([]*FirewallIndex, error) {
+func (c *Client) GetFirewallList() ([]*FirewallListItem, error) {
 
-	res := &[]*FirewallIndex{}
+	res := &[]*FirewallListItem{}
 	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s", c.hostURL, PathGetFirewallList), nil, res)
 	if err != nil {
 		return nil, err
+	}
+
+	for _, firewallListItem := range *res {
+		fixFirewallListItemStruct(firewallListItem)
 	}
 
 	return *res, nil
 }
 
 func (c *Client) RetrieveFirewall(id int) (*Firewall, error) {
-	res := &[]*FirewallEntry{}
+	res := &[]*FirewallRetrieveResponse{}
 	res, err := requestWithJson[any](c, "GET", fmt.Sprintf("%s/%s/%d", c.hostURL, PathRetrieveFirewall, id), nil, res)
 	if err != nil {
 		return nil, err
@@ -158,4 +162,10 @@ func (c *Client) DeleteFirewall(id int) error {
 	}
 
 	return nil
+}
+
+func fixFirewallListItemStruct(firewallListItem *FirewallListItem) *FirewallListItem {
+	firewallListItem.CreatedAt = convDate(firewallListItem.CreatedAt)
+	firewallListItem.UpdatedAt = convDate(firewallListItem.UpdatedAt)
+	return firewallListItem
 }
