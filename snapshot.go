@@ -56,6 +56,10 @@ func (c *Client) GetSnapshotList(instanceID int) ([]*Snapshot, error) {
 		return nil, err
 	}
 
+	for _, snapshot := range *res {
+		fixSnapshotStruct(snapshot)
+	}
+
 	return *res, err
 }
 
@@ -95,4 +99,10 @@ func (c *Client) DeleteSnapshot(id int) error {
 	}
 
 	return nil
+}
+
+func fixSnapshotStruct(snapshot *Snapshot) *Snapshot {
+	snapshot.CreatedAt = convDate(snapshot.CreatedAt)
+	snapshot.DeletedAt = convDate(snapshot.DeletedAt)
+	return snapshot
 }
