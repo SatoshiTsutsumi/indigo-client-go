@@ -2,6 +2,7 @@ package indigo
 
 import (
 	"fmt"
+	"strconv"
 )
 
 type SnapshotRequest struct {
@@ -20,18 +21,19 @@ type SnapshotResultResponse struct {
 }
 
 type Snapshot struct {
-	ID         int    `json:"id"`
-	Name       string `json:"name"`
-	ServiceID  string `json:"service_id"`
-	UserID     int    `json:"user_id"`
-	DiskID     int    `json:"disk_id"`
-	Volume     int    `json:"volume"`
-	SlotNumber int    `json:"slot_number"`
-	Status     string `json:"status"`
-	Size       string `json:"size"`
-	Deleted    int    `json:"deleted"`
-	CreatedAt  string `json:"completed_timestamp"`
-	DeletedAt  string `json:"deleted_timestamp"`
+	ID         int         `json:"id"`
+	Name       string      `json:"name"`
+	ServiceID  string      `json:"service_id"`
+	UserIDIf   interface{} `json:"user_id"`
+	UserID     int         `json:"-"`
+	DiskID     int         `json:"disk_id"`
+	Volume     int         `json:"volume"`
+	SlotNumber int         `json:"slot_number"`
+	Status     string      `json:"status"`
+	Size       string      `json:"size"`
+	Deleted    int         `json:"deleted"`
+	CreatedAt  string      `json:"completed_timestamp"`
+	DeletedAt  string      `json:"deleted_timestamp"`
 }
 
 func (c *Client) CreateSnapshot(name string, instanceID int) error {
@@ -102,6 +104,7 @@ func (c *Client) DeleteSnapshot(id int) error {
 }
 
 func fixSnapshotStruct(snapshot *Snapshot) *Snapshot {
+	snapshot.UserID, _ = strconv.Atoi(snapshot.UserIDIf.(string))
 	snapshot.CreatedAt = convDate(snapshot.CreatedAt)
 	snapshot.DeletedAt = convDate(snapshot.DeletedAt)
 	return snapshot
