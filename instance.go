@@ -227,6 +227,24 @@ func (c *Client) CreateInstance(sshKeyID int, regionID int, osID int, plan int, 
 	return fixInstanceStruct(res.Instance), nil
 }
 
+func (c *Client) CreateInstanceSync(sshKeyID int, regionID int, osID int, plan int, name string) (*Instance, error) {
+	req := &InstanceRequest{
+		SSHKeyID:     sshKeyID,
+		RegionID:     regionID,
+		OSID:         osID,
+		InstancePlan: plan,
+		InstanceName: name,
+	}
+	res := &InstanceResponse{}
+	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathCreateInstance), req, res)
+	if err != nil {
+		return nil, err
+	}
+
+	time.Sleep(time.Minute * 4)
+	return c.GetInstance(res.Instance.ID)
+}
+
 func (c *Client) CreateWindowsInstance(winPassword string, regionID int, osID int, plan int, name string) (*Instance, error) {
 	req := &InstanceRequest{
 		WinPassword:  winPassword,
@@ -288,6 +306,20 @@ func (c *Client) GetInstanceList() ([]*Instance, error) {
 		fixInstanceStruct(v)
 	}
 	return *res, nil
+}
+
+func (c *Client) GetInstance(id int) (*Instance, error) {
+	instances, err := c.GetInstanceList()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, instance := range instances {
+		if instance.ID == id {
+			return instance, nil
+		}
+	}
+	return nil, fmt.Errorf("instance (%d) not found", id)
 }
 
 func (c *Client) UpdateInstanceStatus(instanceID int, status string) error {
