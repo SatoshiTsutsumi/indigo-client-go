@@ -38,7 +38,10 @@ const (
 )
 
 const (
-	TimeForInstanceCreation = 4 * time.Minute
+	TimeoutForInstanceCreation       = 3 * time.Minute
+	TimeoutForSnapshotCreation       = 2 * time.Minute
+	CheckIntervalForInstanceCreation = 15 * time.Second
+	CheckIntervalForSnapshotCreation = 15 * time.Second
 )
 
 type Client struct {
@@ -143,13 +146,13 @@ func requestWithJson[Request, Response any](c *Client, method string, url string
 	//     which means 2 messages per 1s is allowed??
 	//   It seems using refreshed AccessToken alleviates this issue even though requests increase.
 	if c.AutoRateLimit {
-		time.Sleep(time.Second * 12)
+		time.Sleep(time.Second * 5)
 
 		err := c.RefreshAccessToken()
 		if err != nil {
 			return nil, err
 		}
-		time.Sleep(time.Second * 6)
+		time.Sleep(time.Second * 5)
 	}
 
 	return requestWithJsonNoRefresh(c, method, url, request, response)
