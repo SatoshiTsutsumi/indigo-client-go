@@ -49,6 +49,15 @@ func TestCreateInstance(t *testing.T) {
 	fmt.Printf("%v\n", instanceForTestInstance)
 }
 
+func TestCreateInstanceSync(t *testing.T) {
+	var err error
+	instanceForTestInstance, err = client.CreateInstanceSync(sshKeyForTest.ID, 1, 1, 1, "VM00")
+	if err != nil {
+		t.Fatalf("CreateInstanceSync() = %v, want %v", err, "'nil'")
+	}
+	fmt.Printf("%v\n", instanceForTestInstance)
+}
+
 func TestGetInstanceList(t *testing.T) {
 	instances, err := client.GetInstanceList()
 	if err != nil {
