@@ -233,8 +233,8 @@ func (c *Client) CreateInstanceSync(sshKeyID int, regionID int, osID int, plan i
 	if err != nil {
 		return nil, err
 	}
-	time.Sleep(TimeForInstanceCreation)
-	return c.GetInstance(instance.ID)
+
+	return c.WaitForInstanceReady(instance.ID)
 }
 
 func (c *Client) CreateWindowsInstance(winPassword string, regionID int, osID int, plan int, name string) (*Instance, error) {
@@ -259,8 +259,8 @@ func (c *Client) CreateWindowsInstanceSync(winPassword string, regionID int, osI
 	if err != nil {
 		return nil, err
 	}
-	time.Sleep(TimeForInstanceCreation)
-	return c.GetInstance(instance.ID)
+
+	return c.WaitForInstanceReady(instance.ID)
 }
 
 func (c *Client) CreateImportInstance(url string, regionID int, osID int, plan int, name string) (*Instance, error) {
@@ -285,8 +285,8 @@ func (c *Client) CreateImportInstanceSync(url string, regionID int, osID int, pl
 	if err != nil {
 		return nil, err
 	}
-	time.Sleep(TimeForInstanceCreation)
-	return c.GetInstance(instance.ID)
+
+	return c.WaitForInstanceReady(instance.ID)
 }
 
 func (c *Client) CreateSnapshotInstance(sshKeyID int, snapshotID int, plan int, name string) (*Instance, error) {
@@ -310,8 +310,8 @@ func (c *Client) CreateSnapshotInstanceSync(sshKeyID int, snapshotID int, plan i
 	if err != nil {
 		return nil, err
 	}
-	time.Sleep(TimeForInstanceCreation)
-	return c.GetInstance(instance.ID)
+
+	return c.WaitForInstanceReady(instance.ID)
 }
 
 func (c *Client) GetInstanceList() ([]*Instance, error) {
@@ -339,6 +339,21 @@ func (c *Client) GetInstance(id int) (*Instance, error) {
 		}
 	}
 	return nil, fmt.Errorf("instance (%d) not found", id)
+}
+
+func (c *Client) WaitForInstanceReady(id int) (*Instance, error) {
+	t := time.Now()
+	timeout := t.Add(TimeoutForInstanceCreation)
+	for timeout.Sub(t).Seconds() > 0 {
+		time.Sleep(CheckIntervalForInstanceCreation)
+		instance, err := c.GetInstance(id)
+		fmt.Printf("GetInstance=%v", instance)
+		if err == nil && instance.Status == "OPEN" {
+			return instance, nil
+		}
+		t = time.Now()
+	}
+	return nil, fmt.Errorf("WaitForInstanceReady timeout")
 }
 
 func (c *Client) UpdateInstanceStatus(instanceID int, status string) error {

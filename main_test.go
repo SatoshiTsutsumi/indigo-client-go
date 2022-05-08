@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"testing"
-	"time"
 )
 
 var client *Client
@@ -27,13 +26,11 @@ func setUp() bool {
 	fmt.Print("SSHKey created.\n")
 
 	fmt.Print("Creating Instance...\n")
-	instanceForTest, err = client.CreateInstance(sshKeyForTest.ID, 1, 1, 1, "instanceForTest")
+	instanceForTest, err = client.CreateInstanceSync(sshKeyForTest.ID, 1, 1, 1, "instanceForTest")
 	if err != nil {
 		fmt.Printf("%v", err)
 		return true
 	}
-	// Wait for instance created
-	time.Sleep(time.Minute * 5)
 	fmt.Print("Instance created.\n")
 	return false
 }

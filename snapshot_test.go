@@ -1,6 +1,7 @@
 package indigo
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -11,6 +12,14 @@ func TestCreateSnapshot(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CreateSnapshot() = %v, want %v", err, "nil")
 	}
+}
+
+func TestCreateSnapshotSync(t *testing.T) {
+	snapshot, err := client.CreateSnapshotSync("snapshot1", instanceForTest.ID)
+	if err != nil {
+		t.Fatalf("CreateSnapshot() = %v, want %v", err, "nil")
+	}
+	fmt.Printf("%v\n", snapshot)
 }
 
 func TestGetSnapshotList(t *testing.T) {
