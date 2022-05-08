@@ -37,6 +37,10 @@ const (
 	PathDeleteDomain         = "webarenaIndigo/v1/dns/canceldomain"
 )
 
+const (
+	TimeForInstanceCreation = 4 * time.Minute
+)
+
 type Client struct {
 	hostURL       string
 	httpClient    *http.Client

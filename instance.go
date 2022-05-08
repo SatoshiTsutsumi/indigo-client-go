@@ -228,21 +228,12 @@ func (c *Client) CreateInstance(sshKeyID int, regionID int, osID int, plan int, 
 }
 
 func (c *Client) CreateInstanceSync(sshKeyID int, regionID int, osID int, plan int, name string) (*Instance, error) {
-	req := &InstanceRequest{
-		SSHKeyID:     sshKeyID,
-		RegionID:     regionID,
-		OSID:         osID,
-		InstancePlan: plan,
-		InstanceName: name,
-	}
-	res := &InstanceResponse{}
-	res, err := requestWithJson(c, "POST", fmt.Sprintf("%s/%s", c.hostURL, PathCreateInstance), req, res)
+	instance, err := c.CreateInstance(sshKeyID, regionID, osID, plan, name)
 	if err != nil {
 		return nil, err
 	}
-
-	time.Sleep(time.Minute * 4)
-	return c.GetInstance(res.Instance.ID)
+	time.Sleep(TimeForInstanceCreation)
+	return c.GetInstance(instance.ID)
 }
 
 func (c *Client) CreateWindowsInstance(winPassword string, regionID int, osID int, plan int, name string) (*Instance, error) {
@@ -262,6 +253,15 @@ func (c *Client) CreateWindowsInstance(winPassword string, regionID int, osID in
 	return fixInstanceStruct(res.Instance), nil
 }
 
+func (c *Client) CreateWindowsInstanceSync(winPassword string, regionID int, osID int, plan int, name string) (*Instance, error) {
+	instance, err := c.CreateWindowsInstance(winPassword, regionID, osID, plan, name)
+	if err != nil {
+		return nil, err
+	}
+	time.Sleep(TimeForInstanceCreation)
+	return c.GetInstance(instance.ID)
+}
+
 func (c *Client) CreateImportInstance(url string, regionID int, osID int, plan int, name string) (*Instance, error) {
 	req := &InstanceRequest{
 		ImportURL:    url,
@@ -279,6 +279,15 @@ func (c *Client) CreateImportInstance(url string, regionID int, osID int, plan i
 	return fixInstanceStruct(res.Instance), nil
 }
 
+func (c *Client) CreateImportInstanceSync(url string, regionID int, osID int, plan int, name string) (*Instance, error) {
+	instance, err := c.CreateImportInstance(url, regionID, osID, plan, name)
+	if err != nil {
+		return nil, err
+	}
+	time.Sleep(TimeForInstanceCreation)
+	return c.GetInstance(instance.ID)
+}
+
 func (c *Client) CreateSnapshotInstance(sshKeyID int, snapshotID int, plan int, name string) (*Instance, error) {
 	req := &InstanceRequest{
 		SSHKeyID:     sshKeyID,
@@ -293,6 +302,15 @@ func (c *Client) CreateSnapshotInstance(sshKeyID int, snapshotID int, plan int, 
 	}
 
 	return fixInstanceStruct(res.Instance), nil
+}
+
+func (c *Client) CreateSnapshotInstanceSync(sshKeyID int, snapshotID int, plan int, name string) (*Instance, error) {
+	instance, err := c.CreateSnapshotInstance(sshKeyID, snapshotID, plan, name)
+	if err != nil {
+		return nil, err
+	}
+	time.Sleep(TimeForInstanceCreation)
+	return c.GetInstance(instance.ID)
 }
 
 func (c *Client) GetInstanceList() ([]*Instance, error) {
